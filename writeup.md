@@ -14,23 +14,44 @@ In a single page, outline:
 - Approaches for low‑latency deployment
 
 
+## Results
 
+![alt text](image.png)
+
+
+  plt.show()
+              precision    recall  f1-score   support
+
+           0       0.94      0.94      0.94        17
+           1       0.92      0.92      0.92        13
+
+    accuracy                           0.93        30
+   macro avg       0.93      0.93      0.93        30
+weighted avg       0.93      0.93      0.93        30
+
+
+## Walkthrough
+
+In this project, I created a simple CAPTCHA in a python flask application to collect human and bot data. I then take that data and extract features in pandas, which I trained an XGBoost (XGB) model on with a 70-30 train-test split. The accuracy of the XGB model reached 0.933... with no hyperparameter tuning, inference took only 0.00167s, meaning it's relatively low-latency. 
 
 
 ## Potential Improvements
 
-
 ### Data collection
 - higher end botting
 - more realistic captcha
-- 
+- increase number of samples
+- incorporate mobile device sensors source: 
 
 ### Feature Extraction
 - Add linearity feature
-- 
+- Add inverse tangent feature
+- Add device sensor information
 
 ### Machine Learning
-- not using python, python = slow. prospects: julia, c++
+- Not using python, python = slow. prospects: julia, c++
 - Automated hyperparameter tuning (optuna, raytune)
-- Performance testing (lgbm, rf may be faster for same performance)
-
+- Testing different models (lgbm, rf may be faster for same performance)
+- Subsampling: since we have more than 50 of each feature, we can randomly sample
+- Luckily, tree-based learners are eager learners. We can spend tons of time on training and not affect inference performance
+- 
