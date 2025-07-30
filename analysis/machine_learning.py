@@ -1,6 +1,6 @@
 import pandas as pd, numpy as np, xgboost as xgb, seaborn as sns, matplotlib.pyplot as plt, time
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, roc_curve, auc
 
 data = pd.read_csv('data.csv')
 
@@ -51,3 +51,20 @@ sns.heatmap(cm, annot=True, fmt='d')
 plt.show()
 
 print(classification_report(y_test, y_pred))
+
+y_pred_proba = model.predict_proba(X_test)[:, 1]
+
+fp, tp, threshholds = roc_curve(y_test, y_pred_proba)
+
+roc_auc = auc(fp, tp)
+
+plt.figure(figsize=(8, 6))
+plt.plot(fp, tp, color='blue', label=f'ROC curve (AUC = {roc_auc:.2f})')
+plt.plot([0, 1], [0, 1], color='red', linestyle='--', label='Random guess')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic (ROC) Curve')
+plt.legend(loc="lower right")
+plt.show()
