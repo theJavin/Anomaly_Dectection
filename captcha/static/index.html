@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mouse Tracking</title>
+
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #tracker {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: red;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        #piece{
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: blue;
+        }
+        #start{
+            position: absolute;
+            /* float: left; */
+            width: 100px;
+            height: 100px;
+            /* margin: 10px; */
+            padding: 10px;
+            border: 1px solid black;
+        }
+        #puzzle{
+            position: absolute;
+            /* float: left; */
+            width: 100px;
+            height: 100px;
+            /* margin: 100px; */
+            padding: 10px;
+            background: purple;
+        }
+    </style>
+
+    <script>
+        function dragstartHandler(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function dragoverHandler(ev) {
+            ev.preventDefault();
+        }
+
+        function dropHandler(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            ev.target.appendChild(document.getElementById(data));
+        } 
+    </script>
+
+</head>
+<body>
+    
+    <button id="button1" type="button" 
+    onclick="startSession()"
+    >Start Captcha</button>
+
+    <div id="start" ondrop="dropHandler(event)"   ondragover="dragoverHandler(event)">
+    <div id="piece" draggable="true" ondragstart="dragstartHandler(event)" width="88" height="31"></div>
+    <div id="puzzle" ondrop="dropHandler(event)"   ondragover="dragoverHandler(event)"></div>
+
+
+    
+    
+    <div id="tracker"></div>
+    <!-- <div id="piece"></div> -->
+    <!-- <div id="puzzle"></div> -->
+
+    <script>
+        
+        var session_index = 0;
+
+        //random start position
+        var puzzle = document.getElementById('puzzle');
+        var spaceWidth;
+        var spaceHeight;
+
+        function initPuzzle() {
+            spaceWidth = 300  //document.body.offsetHeight - parseInt(puzzle.style.height);
+            spaceHeight = 300 //document.body.offsetWidth - parseInt(puzzle.style.width);
+            //puzzle.addEventListener('click', movePuzzle)
+        }
+
+        function movePuzzle() {
+            puzzle.style.top = Math.round(200 + (Math.random() * spaceWidth)) + 'px';
+            puzzle.style.left = Math.round(200 + (Math.random() * spaceHeight)) + 'px';
+        }
+
+        initPuzzle();
+        
+
+        function startSession() {
+            session_index += 1;
+            movePuzzle();
+        }
+
+
+        //mouse tracker
+        const tracker = document.getElementById('tracker');
+
+        document.addEventListener('mousemove', function(event) {
+            const x = event.clientX;
+            const y = event.clientY;
+            
+            // update tracker
+            tracker.style.left = `${x}px`;
+            tracker.style.top = `${y}px`;
+
+            // mouse position
+            fetch('/track-mouse', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({index: session_index, x: x, y: y }),
+            });
+        });
+    </script>
+</body>
+</html>
